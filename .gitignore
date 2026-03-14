@@ -9,3 +9,4 @@ dist
 serviceAccountKey.json
 *.log
 test.js
+seed-admin.js
