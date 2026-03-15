@@ -6,3 +6,7 @@
 
 **/node_modules/
 dist
+serviceAccountKey.json
+*.log
+test.js
+seed-admin.js
