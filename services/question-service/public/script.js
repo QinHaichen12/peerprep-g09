@@ -11,6 +11,7 @@ const statusMessage = document.getElementById("statusMessage");
 
 let allowedTopics = [];
 let allowedDifficulties = [];
+
 const formFields = {
   questionId: document.getElementById("questionId"),
   title: document.getElementById("title"),
@@ -22,6 +23,7 @@ const formFields = {
   sourceUrl: document.getElementById("sourceUrl"),
   imageUrl: document.getElementById("imageUrl"),
 };
+
 
 const setStatus = (message, isError = false) => {
   statusMessage.textContent = message;
@@ -294,6 +296,27 @@ const deleteQuestion = async (questionId) => {
   }
 };
 
+const editQuestion = async (questionID) => {
+  try {
+    const response = await fetch(`/api/questions/editinfo/${questionID}`, {
+      headers: getHeaders(),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Failed to edit question.");
+    }
+    
+    populateForm(data);
+
+    setStatus("editing question");
+    setStatus(`Loaded "${data.title}" into the form.`);
+  } catch (error) {
+    setStatus(error.message, true);
+  }
+}
+
 questionsList.addEventListener("click", async (event) => {
   const button = event.target.closest("button");
 
@@ -304,21 +327,7 @@ questionsList.addEventListener("click", async (event) => {
   const { action, id } = button.dataset;
 
   if (action === "edit") {
-    try {
-      const response = await fetch(`/api/questions/${id}`, {
-        headers: getHeaders(),
-      });
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to load question details.");
-      }
-
-      populateForm(data);
-      setStatus(`Loaded "${data.title}" into the form.`);
-    } catch (error) {
-      setStatus(error.message, true);
-    }
+    await editQuestion(id);
   }
 
   if (action === "delete") {
